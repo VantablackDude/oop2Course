@@ -1,0 +1,119 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #FEFFE7
+skinparam classBackgroundColor #E8F8FF
+skinparam classBorderColor #2E6292
+skinparam classFontSize 11
+skinparam classHeaderBackgroundColor #8FBCDB
+
+namespace oopLaba2 {
+
+' ===== БАЗОВЫЙ КЛАСС =====
+abstract class Device {
+  # _name : string
+  # _manufacturer : string
+  # _isOn : bool
+  # _createdAt : DateTime
+  ..
+  + {abstract} GetShortDescription() : string
+  + {virtual} TurnOn() : void
+  + {virtual} TurnOff() : void
+  + {virtual} GetStatus() : string
+  + {virtual} GetDeviceType() : string
+  + {virtual} GetDetailedInfo() : string
+}
+
+' ===== НАСЛЕДНИКИ =====
+class Thermostat {
+  + SetTemperature(temp : double) : void
+  + GetClimateInfo() : string
+}
+
+class Light {
+  + SetBrightness(level : int) : void
+  + GetLightInfo() : string
+}
+
+class DoorLock {
+  + TryUnlock(code : string) : bool
+  + GetLockInfo() : string
+}
+
+class Camera {
+  + StartRecording() : string
+  + RecordMotion() : string
+}
+
+Device <|-- Thermostat
+Device <|-- Light
+Device <|-- DoorLock
+Device <|-- Camera
+
+' ===== ФОРМЫ =====
+class MainForm {
+  - dgvDevices : DataGridView
+  ..
+  + MainForm()
+  - LoadDevices() : void
+  - ShowDeviceDetails(id : int) : void
+  - BtnAdd_Click()
+  - BtnEdit_Click()
+  - BtnDelete_Click()
+  - BtnToggle_Click()
+  - BtnMethods_Click()
+}
+
+class DeviceEditForm {
+  - cmbType : ComboBox
+  - txtName, txtManufacturer : TextBox
+  ..
+  + DeviceEditForm()
+  + DeviceEditForm(deviceId : int)
+  - BtnSave_Click()
+}
+
+class MethodCallForm {
+  - cmbMethods : ComboBox
+  ..
+  + MethodCallForm(deviceId : int)
+  - LoadMethods() : void
+  - BtnExecute_Click()
+}
+
+' ===== БАЗА ДАННЫХ =====
+class DatabaseHelper {
+  {static} + Initialize() : void
+  {static} + InsertDevice(device) : int
+  {static} + GetAllDevices() : DataTable
+  {static} + GetDeviceById(id) : Dictionary
+  {static} + UpdateDevice(device, id) : void
+  {static} + DeleteDevice(id) : void
+  {static} + SetDeviceState(id, isOn) : void
+  {static} + CreateDeviceObject(id) : Device
+  {static} + SaveDeviceObject(device, id) : void
+}
+
+' ===== СВЯЗИ =====
+MainForm ..> DeviceEditForm : открывает
+MainForm ..> MethodCallForm : открывает
+MainForm ..> DatabaseHelper : использует
+
+DeviceEditForm ..> DatabaseHelper : использует
+DeviceEditForm ..> Device : создаёт
+DeviceEditForm ..> Thermostat : создаёт
+DeviceEditForm ..> Light : создаёт
+DeviceEditForm ..> DoorLock : создаёт
+DeviceEditForm ..> Camera : создаёт
+
+MethodCallForm ..> DatabaseHelper : использует
+MethodCallForm ..> Device : вызывает методы
+
+DatabaseHelper ..> Device : CRUD
+DatabaseHelper ..> Thermostat : CRUD
+DatabaseHelper ..> Light : CRUD
+DatabaseHelper ..> DoorLock : CRUD
+DatabaseHelper ..> Camera : CRUD
+
+}
+
+@enduml

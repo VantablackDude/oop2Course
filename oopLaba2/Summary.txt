@@ -1,0 +1,355 @@
+================================================================================
+        ЛАБОРАТОРНАЯ РАБОТА: УМНЫЙ ДОМ (SMART HOME)
+        ООП, C#, WindowsForms, SQLite
+================================================================================
+
+1. СТРУКТУРА ПРОЕКТА
+================================================================================
+oopLaba2/
+|-- Program.cs              - Точка входа приложения
+|-- Device.cs               - Базовый абстрактный класс
+|-- Thermostat.cs           - Термостат (наследник Device)
+|-- Light.cs                - Умный свет (наследник Device)
+|-- DoorLock.cs             - Умный замок (наследник Device)
+|-- Camera.cs               - Камера (наследник Device)
+|-- DatabaseHelper.cs       - Работа с БД SQLite (CRUD)
+|-- MainForm.cs             - Главная форма WindowsForms
+|-- DeviceEditForm.cs       - Форма добавления/редактирования
+|-- App.config              - Конфигурация приложения
+|-- smart_home.db           - Файл базы данных SQLite (создается при запуске)
+================================================================================
+
+
+2. ДИАГРАММА КЛАССОВ
+================================================================================
+
+                        ┌────────────────┐
+                        │    Device      │  ← АБСТРАКТНЫЙ (abstract)
+                        │   (abstract)   │
+                        │                │
+                        │ Поля:          │
+                        │ - _name        │
+                        │ - _manufacturer│
+                        │ - _isOn        │
+                        │ - _createdAt   │
+                        │                │
+                        │ Методы:        │
+                        │ + TurnOn()     │
+                        │ + TurnOff()    │
+                        │ + GetStatus()  │
+                        │ + GetDeviceType│
+                        │ + GetDetailed  │
+                        │   Info()       │
+                        │ + GetShortDesc │
+                        │   ription()*   │  ← АБСТРАКТНЫЙ
+                        └────┬──┬──┬──┬─┘
+                             │  │  │  │
+         ┌───────────────────┘  │  │  └──────────────────┐
+         │                      │  │                     │
+  ┌──────┴──────┐    ┌─────────┴──┴──────┐    ┌─────────┴──────┐
+  │ Thermostat │    │      Light        │    │   DoorLock     │
+  │             │    │                  │    │                │
+  │ Поля:       │    │ Поля:            │    │ Поля:          │
+  │ _currentTemp│    │ _brightness      │    │ _isLocked      │
+  │ _targetTemp │    │ _color           │    │ _accessCode    │
+  │ _mode       │    │ _autoMode        │    │ _wrongAttempts │
+  │ _humidity   │    │ _scheduledTime   │    │ _autoLock      │
+  │             │    │                  │    │ _lastAccessTime│
+  │ Методы:     │    │ Методы:          │    │ Методы:        │
+  │ SetTemp()   │    │ SetBrightness()  │    │ TryUnlock()    │
+  │ SetMode()   │    │ SetColor()       │    │ Lock()         │
+  │ ReadTemp()  │    │ EnableAutoMode() │    │ SetAccessCode()│
+  │ GetClimate()│    │ GetLightInfo()   │    │ GetLockInfo()  │
+  └─────────────┘    └──────────────────┘    └───────────────┘
+
+  ┌───────────────────────┐
+  │       Camera          │
+  │ Поля:                 │
+  │ _resolution           │
+  │ _isRecording          │
+  │ _motionDetection      │
+  │ _storageUsed          │
+  │ _lastMotionTime       │
+  │ Методы:               │
+  │ StartRecording()      │
+  │ StopRecording()       │
+  │ SetResolution()       │
+  │ RecordMotion()        │
+  │ GetRecordingInfo()    │
+  └───────────────────────┘
+
+================================================================================
+
+
+3. ОПИСАНИЕ КЛАССОВ
+================================================================================
+
+3.1. Device (Device.cs) - Базовый абстрактный класс
+-------------------------------------------------------------------------------
+Поля (4):
+  - _name          string    - Название устройства
+  - _manufacturer  string    - Производитель
+  - _isOn          bool      - Состояние (вкл/выкл)
+  - _createdAt    DateTime   - Дата создания
+
+Геттеры/Сеттеры:
+  + Name, Manufacturer, IsOn, CreatedAt
+
+Конструкторы (3):
+  - Device()                         - по умолчанию
+  - Device(name, manufacturer)       - с параметрами
+  - Device(other)                    - копирования
+
+Методы:
+  - TurnOn()      virtual   - Включить устройство
+  - TurnOff()     virtual   - Выключить устройство
+  - GetStatus()   virtual   - Получить статус
+  - GetDeviceType() virtual  - Получить тип
+  - GetDetailedInfo() virtual- Получить детали
+  - GetShortDescription() abstract - ОБЯЗАТЕЛЕН для наследников
+
+
+3.2. Thermostat (Thermostat.cs) - Наследник Device
+-------------------------------------------------------------------------------
+Собственные поля (4):
+  - _currentTemperature  double  - Текущая температура
+  - _targetTemperature   double  - Целевая температура
+  - _mode               string  - Режим (heat/cool/auto)
+  - _humidity          double  - Влажность
+
+Конструкторы (4):
+  - Thermostat()                           - по умолчанию
+  - Thermostat(name, manufacturer, temp)   - основной
+  - Thermostat(...полные параметры...)     - полный
+  - Thermostat(other)                      - копирования
+
+Собственные методы (4):
+  - SetTemperature(temp)       - установить температуру
+  - SetMode(mode)              - изменить режим
+  - ReadCurrentTemperature()   - прочитать температуру
+  - GetClimateInfo()           - получить климат-инфо
+
+Перекрытые методы (override):
+  - TurnOn()         - дополнен запуском режима
+  - GetDeviceType()  - возвращает "Thermostat"
+  - GetDetailedInfo()- детальная информация
+  - GetShortDescription() - краткое описание
+
+
+3.3. Light (Light.cs) - Наследник Device
+-------------------------------------------------------------------------------
+Собственные поля (4):
+  - _brightness     int   - Яркость (0-100)
+  - _color         string- Цвет
+  - _autoMode      bool  - Авторежим
+  - _scheduledTime int   - Время включения
+
+Собственные методы (4):
+  - SetBrightness(level)     - установить яркость
+  - SetColor(color)          - изменить цвет
+  - EnableAutoMode(enable)   - авт. включение
+  - GetLightInfo()          - световая информация
+
+Перекрытые методы:
+  - TurnOn(), GetDeviceType(), GetDetailedInfo(), GetShortDescription()
+
+
+3.4. DoorLock (DoorLock.cs) - Наследник Device
+-------------------------------------------------------------------------------
+Собственные поля (5):
+  - _isLocked       bool   - Состояние (заперт/открыт)
+  - _accessCode    string - Код доступа
+  - _wrongAttempts int    - Неверные попытки
+  - _autoLock      bool   - Автоблокировка
+  - _lastAccessTime string- Время последнего доступа
+
+Собственные методы (5):
+  - TryUnlock(code)    - попытка открыть
+  - Lock()            - закрыть
+  - SetAccessCode()   - сменить код
+  - EnableAutoLock()  - установить блокировку
+  - GetLockInfo()     - информация о замке
+
+Перекрытые методы:
+  - TurnOn(), GetDeviceType(), GetDetailedInfo(), GetShortDescription()
+
+
+3.5. Camera (Camera.cs) - Наследник Device
+-------------------------------------------------------------------------------
+Собственные поля (5):
+  - _resolution        int   - Разрешение (720/1080/2160/3840)
+  - _isRecording       bool  - Запись
+  - _motionDetection   bool  - Детекция движения
+  - _storageUsed       int   - Использовано памяти
+  - _lastMotionTime    string- Время последнего движения
+
+Собственные методы (5):
+  - StartRecording()     - начать запись
+  - StopRecording()      - остановить запись
+  - SetResolution()      - изменить разрешение
+  - EnableMotionDetection()- вкл/выкл детекцию
+  - RecordMotion()       - зафиксировать движение
+  - GetRecordingInfo()   - информация о записи
+
+Перекрытые методы:
+  - TurnOn(), GetDeviceType(), GetDetailedInfo(), GetShortDescription()
+
+================================================================================
+
+
+4. БАЗА ДАННЫХ (SQLite)
+================================================================================
+Файл: smart_home.db (создается автоматически)
+
+Таблицы:
+
+  Таблица Devices (общие данные):
+    Id              INTEGER PK AUTOINCREMENT
+    Name            TEXT NOT NULL
+    Manufacturer    TEXT NOT NULL
+    IsOn            INTEGER DEFAULT 0
+    DeviceType      TEXT NOT NULL
+    CreatedAt       TEXT NOT NULL
+
+  Таблица Thermostats:
+    Id                  INTEGER PK AUTOINCREMENT
+    DeviceId            INTEGER NOT NULL FK → Devices(Id)
+    CurrentTemperature  REAL DEFAULT 20.0
+    TargetTemperature   REAL DEFAULT 22.0
+    Mode                TEXT DEFAULT 'auto'
+    Humidity            REAL DEFAULT 50.0
+
+  Таблица Lights:
+    Id              INTEGER PK AUTOINCREMENT
+    DeviceId        INTEGER NOT NULL FK → Devices(Id)
+    Brightness      INTEGER DEFAULT 50
+    Color           TEXT DEFAULT 'white'
+    AutoMode        INTEGER DEFAULT 0
+    ScheduledTime   INTEGER DEFAULT -1
+
+  Таблица DoorLocks:
+    Id              INTEGER PK AUTOINCREMENT
+    DeviceId        INTEGER NOT NULL FK → Devices(Id)
+    IsLocked        INTEGER DEFAULT 1
+    AccessCode      TEXT DEFAULT '1234'
+    WrongAttempts   INTEGER DEFAULT 0
+    AutoLock        INTEGER DEFAULT 1
+    LastAccessTime  TEXT NULL
+
+  Таблица Cameras:
+    Id              INTEGER PK AUTOINCREMENT
+    DeviceId        INTEGER NOT NULL FK → Devices(Id)
+    Resolution      INTEGER DEFAULT 1080
+    IsRecording     INTEGER DEFAULT 0
+    MotionDetection INTEGER DEFAULT 1
+    StorageUsed     INTEGER DEFAULT 0
+    LastMotionTime  TEXT NULL
+
+================================================================================
+
+
+5. CRUD ОПЕРАЦИИ (DatabaseHelper.cs)
+================================================================================
+
+CREATE (Создание):
+  - InsertDevice(device) → int (возвращает Id)
+  - InsertThermostat(thermostat, deviceId)
+  - InsertLight(light, deviceId)
+  - InsertDoorLock(doorLock, deviceId)
+  - InsertCamera(camera, deviceId)
+
+READ (Чтение):
+  - GetAllDevices() → DataTable
+  - GetDeviceById(id) → Dictionary<string, object>
+  - GetThermostatByDeviceId(deviceId) → Dictionary<string, object>
+  - GetLightByDeviceId(deviceId) → Dictionary<string, object>
+  - GetDoorLockByDeviceId(deviceId) → Dictionary<string, object>
+  - GetCameraByDeviceId(deviceId) → Dictionary<string, object>
+
+UPDATE (Обновление):
+  - UpdateDevice(device, id)
+  - SetDeviceState(id, isOn)
+  - UpdateThermostat(thermostat, id)
+  - UpdateLight(light, id)
+  - UpdateDoorLock(doorLock, id)
+  - UpdateCamera(camera, id)
+
+DELETE (Удаление):
+  - DeleteDevice(id) - удаляет устройство + связанные данные
+
+================================================================================
+
+
+6. ФУНКЦИОНАЛ WINFORMS
+================================================================================
+
+MainForm (MainForm.cs) - Главная форма:
+  - DataGridView: список устройств
+  - Кнопка "Добавить"  → DeviceEditForm
+  - Кнопка "Редактировать" → DeviceEditForm(deviceId)
+  - Кнопка "Удалить"   → DeleteDevice
+  - Кнопка "Вкл/Выкл"  → SetDeviceState
+  - Кнопка "Обновить"  → LoadDevices
+  - Панель деталей     → ShowDeviceDetails
+
+DeviceEditForm (DeviceEditForm.cs) - Форма добавления/редактирования:
+  - ComboBox: выбор типа (Thermostat/Light/DoorLock/Camera)
+  - Текстовые поля для параметров каждого типа
+  - Кнопка "Сохранить" → Insert / Update
+  - Кнопка "Отмена"
+
+================================================================================
+
+
+7. КЛЮЧЕВЫЕ ПОНЯТИЯ ООП В ПРОЕКТЕ
+================================================================================
+
+┌──────────────┬─────────────────────────────────────────────────────┐
+│ Термин       │ Где используется                                    │
+├──────────────┼─────────────────────────────────────────────────────┤
+│ Абстракция   │ abstract class Device - задает общий интерфейс      │
+│              │ abstract method GetShortDescription()               │
+├──────────────┼─────────────────────────────────────────────────────┤
+│ Наследование │ class Thermostat : Device - Thermostat наследует    │
+│              │ все поля и методы Device                            │
+├──────────────┼─────────────────────────────────────────────────────┤
+│ Инкапсуляция │ private поля + public геттеры/сеттеры               │
+│              │ Например: _name → public Name { get; set; }        │
+├──────────────┼─────────────────────────────────────────────────────┤
+│ Полиморфизм  │ Device d = new Thermostat(...);                     │
+│              │ d.GetDeviceType() → вызывает Thermostat.GetDeviceType│
+│              │ Массив Device[] может хранить любой тип наследника  │
+├──────────────┼─────────────────────────────────────────────────────┤
+│ virtual       │ TurnOn(), GetStatus(), GetDeviceType()             │
+│              │ - можно переопределить в наследниках                │
+├──────────────┼─────────────────────────────────────────────────────┤
+│ override     │ override string GetDeviceType() в каждом наследнике│
+│              │ - переопределяет виртуальный метод                  │
+├──────────────┼─────────────────────────────────────────────────────┤
+│ Конструкторы │ 3+ конструктора в каждом классе:                    │
+│              │ - по умолчанию                                      │
+│              │ - с параметрами                                     │
+│              │ - копирования                                       │
+└──────────────┴─────────────────────────────────────────────────────┘
+
+================================================================================
+
+
+8. СВЯЗЬ КЛАССОВ И БАЗЫ ДАННЫХ
+================================================================================
+
+При создании устройства:
+  1. Создается объект C# (Например, new Thermostat(...))
+  2. Сначала сохраняется в таблицу Devices (общие поля)
+  3. Полученный DeviceId передается в дочернюю таблицу
+
+При удалении устройства:
+  1. По DeviceType определяется, из какой таблицы удалять
+  2. DELETE из связанной таблицы (WHERE DeviceId = id)
+  3. DELETE из Devices (WHERE Id = id)
+
+При просмотре:
+  1. Запрос SELECT * FROM Devices - список всех устройств
+  2. При выборе → отдельный SELECT из дочерней таблицы
+
+================================================================================

@@ -1,0 +1,12 @@
+C:\1DiskD\Projects\current\code\oop\oopLaba2\obj\Debug\oopLaba2.csproj.AssemblyReference.cache
+C:\1DiskD\Projects\current\code\oop\oopLaba2\obj\Debug\oopLaba2.Properties.Resources.resources
+C:\1DiskD\Projects\current\code\oop\oopLaba2\obj\Debug\oopLaba2.csproj.GenerateResource.cache
+C:\1DiskD\Projects\current\code\oop\oopLaba2\obj\Debug\oopLaba2.csproj.CoreCompileInputs.cache
+C:\1DiskD\Projects\current\code\oop\oopLaba2\bin\Debug\oopLaba2.exe.config
+C:\1DiskD\Projects\current\code\oop\oopLaba2\bin\Debug\oopLaba2.exe
+C:\1DiskD\Projects\current\code\oop\oopLaba2\bin\Debug\oopLaba2.pdb
+C:\1DiskD\Projects\current\code\oop\oopLaba2\bin\Debug\System.Data.SQLite.dll
+C:\1DiskD\Projects\current\code\oop\oopLaba2\bin\Debug\System.Data.SQLite.xml
+C:\1DiskD\Projects\current\code\oop\oopLaba2\obj\Debug\oopLaba2.csproj.Up2Date
+C:\1DiskD\Projects\current\code\oop\oopLaba2\obj\Debug\oopLaba2.exe
+C:\1DiskD\Projects\current\code\oop\oopLaba2\obj\Debug\oopLaba2.pdb

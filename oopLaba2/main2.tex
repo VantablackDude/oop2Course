@@ -1,0 +1,665 @@
+\documentclass[oneside,a4paper,14pt]{extarticle}
+\usepackage[T1,T2A]{fontenc}
+\usepackage[left=2.5cm,right=1.5cm,top=2cm,bottom=2cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{textcomp}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{mwe}
+\usepackage{wrapfig}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage{minted}
+\usepackage[all]{xy}
+\usepackage[breaklinks]{hyperref}
+\usepackage{titlesec}
+\titleformat{\section}
+{\normalsize\bfseries}
+{\thesection} {1em} {}
+     \titleformat{subsection}
+{\normalsize\bfseries}
+ {\thesubsection} {1em} {}
+    \titleformat{\subsubsection}
+{\normalsize\bfseries}
+{\thesubsection} {1em} {}
+
+\newcommand{\solutionheading}[1] {
+    \begin{flushleft}
+    \hspace* {1cm}\textbf{#1}
+    \end{flushleft}
+ }
+
+\renewcommand\baselinestretch{1.1}\normalsize
+\setlength{\parindent}{1cm}
+\usepackage{indentfirst}
+
+
+\begin{document}
+    \newpage\thispagestyle{empty}
+    \begin{center}
+        МИНИСТЕРСТВО НАУКИ И ВЫСШЕГО ОБРАЗОВАНИЯ\\
+            РОССИЙСКОЙ ФЕДЕРАЦИИ
+            ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ БЮДЖЕТНОЕ\\
+            ОБРАЗОВАТЕЛЬНОЕ
+            УЧРЕЖДЕНИЕ ВЫСШЕГО ОБРАЗОВАНИЯ\\
+             ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ»\\
+            Институт математики и информационных систем\\
+            Факультет автоматики и вычислительной техники\\
+            Кафедра электронных вычислительных машин
+    \end{center}
+    \vspace{20mm}
+
+    \begin{center}
+        Отчёт по лабораторной работе №2\\
+        по дисциплине\\
+        <<Объектно-Ориентированное Программирование>>\\
+    \end{center}
+    \vspace{48mm}
+
+    Выполнил студент гр. -2304-05-00 \hspace{7mm} \rule[-0,5mm]{16mm}{0.15mm}\,/С Т.Е./
+
+
+    Проверил преподаватель \hfill  \rule[-0,5mm]{30mm}{0.15mm}\,/Ш Н.А./
+
+    \vfill
+    \begin{center}
+        ов\\
+        2026
+    \end{center}
+    \newpage
+
+    \section*{Цель}
+Изучить основы объектно-ориентированного программирования в языке C# на примере разработки приложения «Умный дом» с графическим интерфейсом и хранением данных в БД SQLite.
+
+\section*{Задание}
+На основании согласованной в первой лабораторной работе предметной
+области разработать приложение с графическим интерфейсом пользователя,
+используя классы и особенности C#.
+Сведения об объектах предметной области необходимо хранить в БД.\\
+1. Все требования 1ой работы в силе, каждый класс отдельно, базовый\\
+абстрактный, наследование, доступ к полям классов через геттеры/сеттеры,
+не напрямую.\\ 2. Есть графический интерфейс. По умолчанию WindowsForms.
+Другие варианты обсуждаются, но это не консольное приложение.\\ 3. Для хранения данных используется БД. Данные хранятся не скопом в одной таблице.
+Реализованы основные CRUD функции. Методы классов из 1ой работы тоже доступны.\\ 4. В отчете есть описание диаграммы классов(не забудьте про
+классы формы, они тоже должны быть). Прописываем особенности
+подключения к БД.
+
+
+    \newpage
+
+\section*{Решение}
+
+\section*{Структура проекта:}
+
+Выбранная предметная область: «Умный дом». Абстрактный класс \textbf{Device} и 4 дочерних класса — \textbf{Thermostat}, \textbf{Light}, \textbf{DoorLock} и \textbf{Camera}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{image1.png}
+    \caption*{Рисунок 1 — Структура проекта}
+    \label{fig:placeholder}
+\end{figure}
+
+\newpage
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{ClassDiagram.png}
+    \caption*{Рисунок 2 — Диаграмма классов}
+    \label{fig:placeholder}
+\end{figure}
+
+
+\newpage
+
+\textbf{Абстрактный класс Device}\\
+
+Базовый абстрактный класс для всех устройств умного дома.
+
+Собственные поля:
+
+\begin{verbatim}
+string _name;          // Название устройства
+string _manufacturer;  // Производитель
+bool _isOn;            // Состояние (вкл/выкл)
+DateTime _createdAt;   // Дата создания
+\end{verbatim}
+
+\textbf{Конструкторы:}
+
+\begin{enumerate}
+    \item Конструктор по умолчанию Device();
+
+Нет входных параметров, значения полей \_name, \_manufacturer принимают значения по умолчанию, \_isOn = false, \_createdAt = текущее время.
+
+\item Конструктор Device(string name, string manufacturer);
+
+Поле \_name получает входное строковое значение name.\\
+Поле \_manufacturer получает входное строковое значение manufacturer.\\
+\_isOn = false, \_createdAt = текущее время.
+
+\item Конструктор копирования Device(Device other);
+
+Копирует значения всех полей из объекта other.
+
+\end{enumerate}\\
+
+\textbf{Геттеры/Сеттеры (свойства):}
+
+\begin{verbatim}
+string Name          — чтение/запись поля _name
+string Manufacturer  — чтение/запись поля _manufacturer
+bool IsOn            — чтение/запись поля _isOn
+DateTime CreatedAt   — чтение/запись поля _createdAt
+\end{verbatim}
+
+\textbf{Методы:}
+
+\begin{verbatim}
+virtual void TurnOn()              — включить устройство
+virtual void TurnOff()             — выключить устройство
+virtual string GetStatus()         — получить статус
+virtual string GetDeviceType()     — получить тип устройства
+virtual string GetDetailedInfo()   — детальная информация
+abstract string GetShortDescription()  — краткое описание
+\end{verbatim}
+
+
+\textbf{Дочерний класс Thermostat}\\
+
+Наследник класса Device, представляет термостат — устройство управления температурой и влажностью.
+
+Собственные поля:
+
+\begin{verbatim}
+double _currentTemperature;  // Текущая температура
+double _targetTemperature;   // Целевая температура
+string _mode;                // Режим (heat/cool/auto)
+double _humidity;            // Влажность
+\end{verbatim}
+
+\textbf{Конструкторы:}\\
+
+Thermostat() — по умолчанию, 20°C → 22°C, режим auto, влажность 50\%.\\
+
+Thermostat(string name, string manufacturer, double targetTemp) — основной.\\
+
+Thermostat(string name, string manufacturer, double targetTemp, double currentTemp, string mode, double humidity) — полный.\\
+
+Thermostat(Thermostat other) — копирования.\\
+
+\textbf{Геттеры/Сеттеры:}
+
+\begin{verbatim}
+double CurrentTemperature  — чтение/запись текущей температуры
+double TargetTemperature   — чтение/запись целевой температуры
+string Mode                — чтение/запись режима
+double Humidity            — чтение/запись влажности
+\end{verbatim}
+
+\textbf{Собственные методы:}
+
+\begin{verbatim}
+void SetTemperature(double temp)  — установить целевую температуру
+string GetClimateInfo()           — информация о микроклимате
+\end{verbatim}
+
+\textbf{Перекрытые методы (override):}
+
+\begin{verbatim}
+TurnOn()            — включение с запуском режима
+GetDetailedInfo()   — детальная информация
+GetDeviceType()     — возвращает "Thermostat"
+GetShortDescription() — краткое описание
+\end{verbatim}
+
+Унаследованные методы: TurnOff(), GetStatus().
+
+\newpage
+
+\textbf{Дочерний класс Light}\\
+
+Наследник класса Device, представляет умное освещение с регулировкой яркости и цвета.
+
+Собственные поля:
+
+\begin{verbatim}
+int _brightness;      // Яркость (0-100)
+string _color;        // Цвет
+bool _autoMode;       // Авторежим
+int _scheduledTime;   // Время включения по расписанию
+\end{verbatim}
+
+\textbf{Конструкторы:}\\
+
+Light() — по умолчанию, яркость 50\%, цвет white, ручной режим.\\
+
+Light(string name, string manufacturer, int brightness) — основной.\\
+
+Light(string name, string manufacturer, int brightness, string color, bool autoMode, int scheduledTime) — полный.\\
+
+Light(Light other) — копирования.\\
+
+\textbf{Геттеры/Сеттеры:}
+
+\begin{verbatim}
+int Brightness       — чтение/запись яркости (0-100)
+string Color         — чтение/запись цвета
+bool AutoMode        — чтение/запись авторежима
+int ScheduledTime    — чтение/запись времени расписания
+\end{verbatim}
+
+\textbf{Собственные методы:}
+
+\begin{verbatim}
+void SetBrightness(int level)  — установить яркость (0-100)
+string GetLightInfo()          — информация об освещении
+\end{verbatim}
+
+\textbf{Перекрытые методы (override):}
+
+\begin{verbatim}
+TurnOn()            — включение с автоувеличением яркости
+GetDetailedInfo()   — детальная информация
+GetDeviceType()     — возвращает "Light"
+GetShortDescription() — краткое описание
+\end{verbatim}
+
+Унаследованные методы: TurnOff(), GetStatus().
+
+\newpage
+
+\textbf{Дочерний класс DoorLock}\\
+
+Наследник класса Device, представляет умный дверной замок с кодовым доступом.
+
+Собственные поля:
+
+\begin{verbatim}
+bool _isLocked;           // Состояние (заперт/открыт)
+string _accessCode;       // Код доступа
+int _wrongAttempts;       // Неверные попытки
+bool _autoLock;           // Автоблокировка
+string _lastAccessTime;   // Время последнего доступа
+\end{verbatim}
+
+\textbf{Конструкторы:}\\
+
+DoorLock() — по умолчанию, заперт, код "1234", автоблокировка включена.\\
+
+DoorLock(string name, string manufacturer, string accessCode) — основной.\\
+
+DoorLock(string name, string manufacturer, string accessCode, bool autoLock, bool isLocked) — полный.\\
+
+DoorLock(DoorLock other) — копирования.\\
+
+\textbf{Геттеры/Сеттеры:}
+
+\begin{verbatim}
+bool IsLocked          — чтение/запись состояния
+string AccessCode      — чтение/запись кода доступа
+int WrongAttempts      — чтение/запись неверных попыток
+bool AutoLock          — чтение/запись автоблокировки
+string LastAccessTime  — чтение/запись времени доступа
+\end{verbatim}
+
+\textbf{Собственные методы:}
+
+\begin{verbatim}
+bool TryUnlock(string code)  — попытка открыть по коду
+string GetLockInfo()         — информация о замке
+\end{verbatim}
+
+\textbf{Перекрытые методы (override):}
+
+\begin{verbatim}
+TurnOn()            — включение с автоблокировкой
+GetDetailedInfo()   — детальная информация
+GetDeviceType()     — возвращает "DoorLock"
+GetShortDescription() — краткое описание
+\end{verbatim}
+
+Унаследованные методы: TurnOff(), GetStatus().
+
+\newpage
+
+\textbf{Дочерний класс Camera}\\
+
+Наследник класса Device, представляет камеру видеонаблюдения с детекцией движения.
+
+Собственные поля:
+
+\begin{verbatim}
+int _resolution;         // Разрешение (720/1080/2160/3840p)
+bool _isRecording;       // Состояние записи
+bool _motionDetection;   // Детекция движения
+int _storageUsed;        // Использовано памяти (%)
+string _lastMotionTime;  // Время последнего движения
+\end{verbatim}
+
+\textbf{Конструкторы:}\\
+
+Camera() — по умолчанию, 1080p, детекция включена, память 0\%.\\
+
+Camera(string name, string manufacturer, int resolution) — основной.\\
+
+Camera(string name, string manufacturer, int resolution, bool recording, bool motionDetect, int storageUsed) — полный.\\
+
+Camera(Camera other) — копирования.\\
+
+\textbf{Геттеры/Сеттеры:}
+
+\begin{verbatim}
+int Resolution          — чтение/запись разрешения
+bool IsRecording        — чтение/запись состояния записи
+bool MotionDetection    — чтение/запись детекции движения
+int StorageUsed         — чтение/запись использованной памяти
+string LastMotionTime   — чтение/запись времени движения
+\end{verbatim}
+
+\textbf{Собственные методы:}
+
+\begin{verbatim}
+string StartRecording()  — начать запись (с проверкой памяти)
+string RecordMotion()    — зафиксировать движение
+\end{verbatim}
+
+\textbf{Перекрытые методы (override):}
+
+\begin{verbatim}
+TurnOn()            — включение с инициализацией режима
+GetDetailedInfo()   — детальная информация
+GetDeviceType()     — возвращает "Camera"
+GetShortDescription() — краткое описание
+\end{verbatim}
+
+Унаследованные методы: TurnOff(), GetStatus().
+
+\newpage
+
+\textbf{DatabaseHelper.cs}\\
+
+Статический класс для работы с базой данных SQLite. Все запросы выполняются напрямую через System.Data.SQLite (без Entity Framework).
+
+\begin{enumerate}
+\item \textbf{Initialize()} — Инициализация БД. Создаёт файл \texttt{smart\_home.db} и формирует таблицы через \texttt{CreateTables()}.
+
+\item \textbf{CreateTables()} — Создание пяти таблиц: \texttt{Devices} (общие поля), \texttt{Thermostats}, \texttt{Lights}, \texttt{DoorLocks}, \texttt{Cameras}. Каждая дочерняя таблица связана с \texttt{Devices} через внешний ключ \texttt{DeviceId} с каскадным удалением.
+
+\item \textbf{CRUD-операции:}
+\begin{itemize}
+    \item \texttt{InsertDevice(device)} — INSERT в Devices, возвращает Id.
+    \item \texttt{InsertThermostat(thermostat, deviceId)} — INSERT специфичных данных термостата.
+    \item \texttt{InsertLight(light, deviceId)} — INSERT данных освещения.
+    \item \texttt{InsertDoorLock(doorLock, deviceId)} — INSERT данных замка.
+    \item \texttt{InsertCamera(camera, deviceId)} — INSERT данных камеры.
+    \item \texttt{GetAllDevices()} — SELECT * FROM Devices, возвращает DataTable.
+    \item \texttt{GetDeviceById(id)} — SELECT с WHERE Id = ?, возвращает словарь.
+    \item \texttt{GetThermostatByDeviceId(deviceId)} — SELECT из Thermostats.
+    \item \texttt{UpdateDevice(device, id)} — UPDATE общих полей.
+    \item \texttt{SetDeviceState(id, isOn)} — UPDATE IsOn (вкл/выкл).
+    \item \texttt{DeleteDevice(id)} — DELETE из дочерней таблицы + Devices.
+    \item \texttt{CreateDeviceObject(deviceId)} — создаёт объект C# нужного типа-наследника на основе данных из БД (через \texttt{switch} по \texttt{DeviceType}).
+    \item \texttt{SaveDeviceObject(device, deviceId)} — сохраняет изменения объекта обратно в БД.
+\end{itemize}
+
+\end{enumerate}
+
+\newpage
+\begin{minted}{csharp}
+private void BtnToggle_Click(object? sender, EventArgs e)
+{
+    if (dgvDevices.SelectedRows.Count == 0)
+    {
+        MessageBox.Show("Выберите устройство", "Внимание",
+            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return;
+    }
+
+    int deviceId = Convert.ToInt32(
+        dgvDevices.SelectedRows[0].Cells["Id"].Value);
+    var deviceRow = DatabaseHelper.GetDeviceById(deviceId);
+
+    if (deviceRow == null) return;
+
+    bool currentState = Convert.ToInt32(
+        deviceRow["IsOn"]) == 1;
+    DatabaseHelper.SetDeviceState(deviceId, !currentState);
+    LoadDevices();
+}
+\end{minted}
+
+\section*{Алгоритм: Включение/выключение устройства}
+
+\begin{enumerate}
+    \item Пользователь выбирает устройство в списке \texttt{DataGridView}.
+    \item Нажимает кнопку <<Вкл/Выкл>>.
+    \item Проверить, что строка выбрана.
+    \item Взять Id из выбранной строки.
+    \item Подключиться к SQLite через \texttt{DatabaseHelper}.
+    \item Получить текущее состояние устройства:
+    \[
+    \text{SELECT IsOn FROM Devices WHERE Id = ?}
+    \]
+    \item Инвертировать состояние и выполнить UPDATE:
+    \[
+    \text{UPDATE Devices SET IsOn = ? WHERE Id = ?}
+    \]
+    \item Перезагрузить таблицу на экране.
+\newpage
+    \begin{table}[h!]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Функция} & \textbf{Описание} \\
+\hline
+GetAllDevices() & SELECT * FROM Devices, возвращает DataTable \\
+\hline
+GetDeviceById(id) & SELECT с WHERE Id = ?, возвращает словарь \\
+\hline
+InsertDevice(device) & INSERT в Devices, возвращает сгенерированный Id \\
+\hline
+DeleteDevice(id) & DELETE из Devices и дочерней таблицы \\
+\hline
+UpdateDevice(device, id) & UPDATE Name, Manufacturer, IsOn \\
+\hline
+SetDeviceState(id, isOn) & UPDATE IsOn для быстрого вкл/выкл \\
+\hline
+CreateDeviceObject(id) & Создаёт объект C# нужного типа по данным из БД \\
+\hline
+SaveDeviceObject(device, id) & Сохраняет изменения объекта в БД \\
+\hline
+\end{tabular}
+\caption*{}
+\label{tab:db_methods}
+\end{table}
+\end{enumerate}
+
+\textbf{GetAllDevices()}
+
+\begin{verbatim}
+// MainForm.cs — LoadDevices()
+var dt = DatabaseHelper.GetAllDevices();
+foreach (DataRow row in dt.Rows)
+    dgvDevices.Rows.Add(row["Id"], row["Name"],
+        row["DeviceType"], row["Manufacturer"], ...);
+\end{verbatim}
+
+\textbf{GetDeviceById()}
+
+\begin{verbatim}
+// MainForm.cs — ShowDeviceDetails()
+var deviceRow = DatabaseHelper.GetDeviceById(deviceId);
+string name = deviceRow["Name"].ToString();
+string type = deviceRow["DeviceType"].ToString();
+\end{verbatim}
+
+\textbf{InsertDevice()}
+
+\begin{verbatim}
+// DeviceEditForm.cs — BtnSave_Click()
+int deviceId = DatabaseHelper.InsertDevice(device);
+
+switch (type)
+{
+    case "Thermostat":
+        DatabaseHelper.InsertThermostat(
+            (Thermostat)device, deviceId);
+        break;
+    case "Light":
+        DatabaseHelper.InsertLight(
+            (Light)device, deviceId);
+        break;
+    // ...аналогично для DoorLock, Camera
+}
+\end{verbatim}
+
+\textbf{DeleteDevice()}
+
+\begin{verbatim}
+// MainForm.cs — BtnDelete_Click()
+int deviceId = Convert.ToInt32(
+    dgvDevices.SelectedRows[0].Cells["Id"].Value);
+DatabaseHelper.DeleteDevice(deviceId);
+// DELETE FROM <тип> WHERE DeviceId = ?
+// DELETE FROM Devices WHERE Id = ?
+\end{verbatim}
+
+\textbf{UpdateDevice() / SaveDeviceObject()}
+
+\begin{verbatim}
+// DeviceEditForm.cs — BtnSave_Click() (режим редактирования)
+DatabaseHelper.UpdateDevice(device, _deviceId);
+
+// MethodCallForm.cs — BtnExecute_Click()
+DatabaseHelper.SaveDeviceObject(device, _deviceId);
+// Обновляет Devices + дочернюю таблицу
+\end{verbatim}
+
+\textbf{CreateDeviceObject()}
+
+\begin{verbatim}
+// MethodCallForm.cs — создание объекта для вызова методов
+var device = DatabaseHelper.CreateDeviceObject(_deviceId);
+// Создаёт Thermostat/Light/DoorLock/Camera
+
+((Thermostat)device).SetTemperature(temp);
+DatabaseHelper.SaveDeviceObject(device, _deviceId);
+\end{verbatim}
+
+\textbf{LoadDevices()}
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|l|}
+\hline
+\textbf{Шаг} & \textbf{Действие} \\
+\hline
+1 & Очищает строки DataGridView \\
+\hline
+2 & Инициализирует DatabaseHelper (если не инициализирован) \\
+\hline
+3 & Выполняет GetAllDevices() — SELECT * FROM Devices \\
+\hline
+4 & Перебирает строки DataTable, добавляет в DataGridView \\
+\hline
+5 & Отображает: ID, Название, Тип, Производитель, Статус \\
+\hline
+\end{tabular}
+\caption*{}
+\end{table}
+
+
+\newpage
+\textbf{DeviceEditForm.cs}\\
+\begin{enumerate}
+\item DeviceEditForm() — Конструктор для создания нового устройства\\
+\item DeviceEditForm(int deviceId) — Конструктор для редактирования существующего
+\item InitializeComponent() — Создание UI: выбор типа (ComboBox), выбор конструктора (простой/расширенный), поля для параметров каждого типа
+\item CmbType\_SelectedIndexChanged() — Переключение панели с полями при смене типа устройства
+\item LoadDeviceData() — Загрузка данных существующего устройства в форму
+\item BtnSaveClick() — Сохранение: создание объекта C# нужного типа, INSERT или UPDATE в БД
+\end{enumerate}\\
+
+\textbf{MethodCallForm.cs}\\
+\begin{enumerate}
+\item MethodCallForm(int deviceId) — Конструктор, принимает Id устройства
+\item InitializeComponent() — Создание UI: ComboBox со списком методов, поле для параметра, кнопка "Выполнить"
+\item LoadMethods() — Загружает список методов в зависимости от типа устройства (Thermostat → SetTemperature/GetClimateInfo, Light → SetBrightness/GetLightInfo, и т.д.)
+\item CmbMethods\_SelectedIndexChanged() — Показ/скрытие поля параметра
+\item BtnExecuteClick() — Вызов метода на объекте из CreateDeviceObject(), сохранение через SaveDeviceObject()
+\end{enumerate}
+\newpage
+\textbf{MainForm.cs}\\
+
+\textbf{Методы:}
+
+\begin{enumerate}
+\item MainForm() — Конструктор: инициализация UI + загрузка устройств\\
+\item InitializeComponent() — Создание UI: DataGridView, панель кнопок, панель деталей\\
+\item LoadDevices() — Загрузка списка устройств из БД в DataGridView\\
+\item ShowDeviceDetails(int deviceId) — Детальная информация о выбранном устройстве
+\end{enumerate}\\
+
+
+\textbf{UI обработчики}\\
+
+\begin{enumerate}
+\item BtnAddClick() — Открыть DeviceEditForm для добавления\\
+\item BtnEditClick() — Открыть DeviceEditForm для редактирования\\
+\item BtnDeleteClick() — Удалить выбранное устройство\\
+\item BtnToggleClick() — Включить/выключить выбранное устройство\\
+\item BtnMethodsClick() — Открыть MethodCallForm для вызова методов\\
+\item BtnRefreshClick() — Обновить список устройств\\
+\item DgvDevicesSelectionChanged() — Обновление панели деталей при выборе
+\end{enumerate}\\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{image2.png}
+    \caption*{Рисунок 3 — ERD диаграмма}
+    \label{fig:placeholder}
+\end{figure}
+\newpage
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{image3.png}
+    \caption*{Рисунок 4 — Экранные формы}
+    \label{fig:placeholder}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{image4.png}
+    \caption*{Рисунок 5 — Экранные формы}
+    \label{fig:placeholder}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{image5.png}
+    \caption*{Рисунок 6 — Экранные формы}
+    \label{fig:placeholder}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{image6.png}
+    \caption{Рисунок 7 — Экранные формы}
+    \label{fig:placeholder}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{image7.png}
+    \caption*{Рисунок 8 — Экранные формы}
+    \label{fig:placeholder}
+\end{figure}
+
+\section*
+{Вывод}
+В рамках лабораторной работы была спроектирована иерархия классов, включающая один абстрактный базовый класс \texttt{Device} и четыре производных от него: \texttt{Thermostat}, \texttt{Light}, \texttt{DoorLock}, \texttt{Camera}. Реализовано приложение на Windows Forms с серверной логикой на C\#. С использованием библиотеки System.Data.SQLite создана база данных из пяти таблиц: \texttt{Devices}, \texttt{Thermostats}, \texttt{Lights}, \texttt{DoorLocks}, \texttt{Cameras}. Данные хранятся в отдельных таблицах для каждого типа устройств, связанных через внешний ключ \texttt{DeviceId}. Реализованы все основные CRUD-функции, а также методы классов, доступные через графический интерфейс (включение/выключение, установка температуры, управление яркостью, открытие замка, запуск записи и другие).
+
+\end{document}
