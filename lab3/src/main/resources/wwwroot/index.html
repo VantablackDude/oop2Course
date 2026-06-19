@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Умный дом - Система управления</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <h1>ОЧ УМНЫЙ ДОМ</h1>
+        <p>Система управления оч умным домом</p>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="smarthome">🏠 SmartHome</button>
+        <button class="nav-tab" data-tab="device">📡 Все устройства</button>
+        <button class="nav-tab" data-tab="camera">📷 Камеры</button>
+        <button class="nav-tab" data-tab="doorlock">🔒 Замки</button>
+        <button class="nav-tab" data-tab="light">💡 Лампы</button>
+        <button class="nav-tab" data-tab="thermostat">🌡️ Термостаты</button>
+    </nav>
+
+    <div class="home-context-bar" id="homeContextBar">
+        <span class="home-context-label">🏠 Контекст:</span>
+        <select id="homeSelector" class="home-context-select" onchange="onHomeSelected(this.value)">
+            <option value="">— Выберите дом —</option>
+        </select>
+        <span class="home-context-hint" id="homeContextHint">Устройства будут показаны только для выбранного дома</span>
+    </div>
+
+    <!-- ============ SMARTHOME TAB ============ -->
+    <div id="smarthomeTab" class="tab-content active">
+        <section class="control-panel">
+            <div class="panel-header">
+                <h2>🏠 Управление домами</h2>
+                <div class="status">
+                    <span id="homeCount">0</span> домов
+                </div>
+            </div>
+
+            <div class="create-section">
+                <h3>Создать новый дом</h3>
+                <div class="create-form">
+                    <input type="text" id="homeNameInput" placeholder="Название дома" class="field-group">
+                    <input type="text" id="homeAddressInput" placeholder="Адрес (необязательно)" class="field-group">
+                    <button class="btn btn-primary" id="createHomeBtn">➕ Создать дом</button>
+                </div>
+            </div>
+
+            <div class="cards-grid" id="homesGrid">
+                <!-- Homes loaded here -->
+            </div>
+        </section>
+    </div>
+
+    <!-- ============ DEVICE TAB ============ -->
+    <div id="deviceTab" class="tab-content">
+        <section class="control-panel">
+            <div class="panel-header">
+                <h2>📡 Все устройства</h2>
+                <div class="status">
+                    <span id="deviceCount">0</span> устройств
+                </div>
+            </div>
+            <div class="refresh-section">
+                <button class="btn btn-secondary" id="refreshBtn">🔄 ОБНОВИТЬ ВСЕ ТАБЛИЦЫ</button>
+            </div>
+        </section>
+
+        <div class="device-cards-grid" id="deviceCardsGrid">
+            <!-- Device cards rendered here -->
+        </div>
+    </div>
+
+    <!-- ============ CAMERA TAB ============ -->
+    <div id="cameraTab" class="tab-content">
+        <section class="control-panel">
+            <div class="panel-header">
+                <h2>📷 Управление камерами</h2>
+            </div>
+
+            <div class="constructors-section">
+                <h3>Конструкторы камер</h3>
+                <div class="constructors-grid" id="cameraConstructorsContainer"></div>
+            </div>
+        </section>
+
+        <div class="table-wrapper">
+            <h3>Таблица камер</h3>
+            <div class="table-container">
+                <table class="data-table" id="cameraTable">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название</th>
+                        <th>Производитель</th>
+                        <th>Статус</th>
+                        <th>Разрешение</th>
+                        <th>Запись</th>
+                        <th>Детекция</th>
+                        <th>Память</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody id="cameraTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ DOORLOCK TAB ============ -->
+    <div id="doorlockTab" class="tab-content">
+        <section class="control-panel">
+            <div class="panel-header">
+                <h2>🔒 Управление замками</h2>
+            </div>
+
+            <div class="constructors-section">
+                <h3>Конструкторы замков</h3>
+                <div class="constructors-grid" id="doorlockConstructorsContainer"></div>
+            </div>
+        </section>
+
+        <div class="table-wrapper">
+            <h3>Таблица замков</h3>
+            <div class="table-container">
+                <table class="data-table" id="doorlockTable">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название</th>
+                        <th>Производитель</th>
+                        <th>Статус</th>
+                        <th>Заперт</th>
+                        <th>Автоблок.</th>
+                        <th>Попыток</th>
+                        <th>Последний доступ</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody id="doorlockTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ LIGHT TAB ============ -->
+    <div id="lightTab" class="tab-content">
+        <section class="control-panel">
+            <div class="panel-header">
+                <h2>💡 Управление лампами</h2>
+            </div>
+
+            <div class="constructors-section">
+                <h3>Конструкторы ламп</h3>
+                <div class="constructors-grid" id="lightConstructorsContainer"></div>
+            </div>
+        </section>
+
+        <div class="table-wrapper">
+            <h3>Таблица ламп</h3>
+            <div class="table-container">
+                <table class="data-table" id="lightTable">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название</th>
+                        <th>Производитель</th>
+                        <th>Статус</th>
+                        <th>Яркость</th>
+                        <th>Цвет</th>
+                        <th>Авторежим</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody id="lightTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ THERMOSTAT TAB ============ -->
+    <div id="thermostatTab" class="tab-content">
+        <section class="control-panel">
+            <div class="panel-header">
+                <h2>🌡️ Управление термостатами</h2>
+            </div>
+
+            <div class="constructors-section">
+                <h3>Конструкторы термостатов</h3>
+                <div class="constructors-grid" id="thermostatConstructorsContainer"></div>
+            </div>
+        </section>
+
+        <div class="table-wrapper">
+            <h3>Таблица термостатов</h3>
+            <div class="table-container">
+                <table class="data-table" id="thermostatTable">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название</th>
+                        <th>Производитель</th>
+                        <th>Статус</th>
+                        <th>Текущая T</th>
+                        <th>Целевая T</th>
+                        <th>Режим</th>
+                        <th>Влажность</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody id="thermostatTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingIndicator" class="loading" style="display: none;">Загрузка...</div>
+    <div id="errorMessage" class="error" style="display: none;"></div>
+
+    <footer class="footer">
+        <p>Лабораторная по ООП №3</p>
+    </footer>
+</div>
+
+<div id="notification" class="notification"></div>
+<script src="js/app.js"></script>
+</body>
+</html>
